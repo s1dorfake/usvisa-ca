@@ -22,18 +22,18 @@ bot = TelegramAlertBot()
 
 def get_chrome_driver() -> WebDriver:
     options = webdriver.ChromeOptions()
-    options = webdriver.ChromeOptions()
-    temp_user_data_dir = tempfile.mkdtemp()
-    options.add_argument(f"--user-data-dir={temp_user_data_dir}")
-    #if not SHOW_GUI:
-    options.add_argument("headless")
-    options.add_argument("window-size=1920x1080")
-    options.add_argument("disable-gpu")
-    options.add_argument('user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36')
     options.add_experimental_option("detach", DETACH)
-    options.add_argument('--profile-directory=Default')
-    options.add_argument('--incognito')
-    #options.add_argument("--headless")
+    options.add_argument("--incognito")
+    if not SHOW_GUI:
+        options.add_argument("--headless")
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--disable-gpu")
+    options.add_argument(
+        "user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
+    )
+    options.add_argument("--no-sandbox")  # Required for Linux compatibility
+    options.add_argument("--disable-dev-shm-usage")  # Avoid shared memory issues on Linux
+
     driver = webdriver.Chrome(options=options)
     return driver
 
