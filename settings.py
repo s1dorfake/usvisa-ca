@@ -1,12 +1,21 @@
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+USER_EMAIL = os.getenv('USER_EMAIL')
+USER_PASSWORD = os.getenv('USER_PASSWORD')
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+API_HASH = os.getenv('API_HASH')
+TG_USERS = [int(el) for el in os.getenv('TG_USERS').split(',') if el]
+
 # Account Info
-USER_EMAIL = ""
-USER_PASSWORD = ""
 NUM_PARTICIPANTS = 1
 
 # Say you want an appointment no later than Mar 14, 2024
 # Please strictly follow the YYYY-MM-DD format
 EARLIEST_ACCEPTABLE_DATE = "2024-03-26"
-LATEST_ACCEPTABLE_DATE = "2026-10-10"
+LATEST_ACCEPTABLE_DATE = "2027-01-30" #"2025-12-31"
 
 # Your consulate's city
 CONSULATES = {
@@ -19,7 +28,8 @@ CONSULATES = {
     "Vancouver": 95
 } # Only Toronto and Vancouver consulates are verified
 # Choose a city from the list above
-USER_CONSULATE = "Toronto" 
+TORONTO = "Toronto"
+VANCOUVER = "Vancouver"
 
 # The following is only required for the Gmail notification feature
 # Gmail login info
@@ -51,7 +61,8 @@ DATE_REQUEST_DELAY = 30
 DATE_REQUEST_MAX_RETRY = 60
 DATE_REQUEST_MAX_TIME = 30 * 60
 LOGIN_URL = "https://ais.usvisa-info.com/en-ca/niv/users/sign_in"
-AVAILABLE_DATE_REQUEST_SUFFIX = f"/days/{CONSULATES[USER_CONSULATE]}.json?appointments[expedite]=false"
+AVAILABLE_DATE_REQUEST_SUFFIX_TORONTO = f"/days/{CONSULATES[TORONTO]}.json?appointments[expedite]=false"
+AVAILABLE_DATE_REQUEST_SUFFIX_VANCOUVER = f"/days/{CONSULATES[VANCOUVER]}.json?appointments[expedite]=false"
 APPOINTMENT_PAGE_URL = "https://ais.usvisa-info.com/en-ca/niv/schedule/{id}/appointment"
 PAYMENT_PAGE_URL = "https://ais.usvisa-info.com/en-ca/niv/schedule/{id}/payment"
 REQUEST_HEADERS = {

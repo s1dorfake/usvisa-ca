@@ -1,5 +1,6 @@
 import re
 import traceback
+import random
 from datetime import datetime
 from time import sleep
 
@@ -13,7 +14,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from legacy_rescheduler import legacy_reschedule
 from request_tracker import RequestTracker
 from settings import *
+from bot import TelegramAlertBot
 
+bot = TelegramAlertBot()
 
 def get_chrome_driver() -> WebDriver:
     options = webdriver.ChromeOptions()
@@ -59,7 +62,7 @@ def get_appointment_page(driver: WebDriver) -> None:
         EC.element_to_be_clickable((By.LINK_TEXT, "Continue"))
     )
     continue_button.click()
-    sleep(2)
+    sleep(3)
     current_url = driver.current_url
     url_id = re.search(r"/(\d+)", current_url).group(1)
     appointment_url = APPOINTMENT_PAGE_URL.format(id=url_id)
@@ -67,12 +70,14 @@ def get_appointment_page(driver: WebDriver) -> None:
 
 
 def get_available_dates(
-    driver: WebDriver, request_tracker: RequestTracker
+    driver: WebDriver, 
+    request_tracker: RequestTracker,
+    suffix: str = AVAILABLE_DATE_REQUEST_SUFFIX_TORONTO,
 ) -> list | None:
     request_tracker.log_retry()
     request_tracker.retry()
     current_url = driver.current_url
-    request_url = current_url + AVAILABLE_DATE_REQUEST_SUFFIX
+    request_url = current_url + suffix
     request_header_cookie = "".join(
         [f"{cookie['name']}={cookie['value']};" for cookie in driver.get_cookies()]
     )
@@ -153,6 +158,63 @@ def reschedule_with_new_session(retryCount: int = DATE_REQUEST_MAX_RETRY) -> boo
         return True
     else:
         return False
+    
+def send_notifs(earliest_dates):
+    latest_acceptable_date = datetime.strptime(
+        LATEST_ACCEPTABLE_DATE, "%Y-%m-%d"
+    ).date()
+
+    if earliest_dates[TORONTO] and earliest_dates[TORONTO] <= latest_acceptable_date:
+        bot.send_mes(f"{TORONTO} - {earliest_dates[TORONTO]}\nhttps://ais.usvisa-info.com/en-ca/niv/users/sign_in")
+
+    if earliest_dates[VANCOUVER] and earliest_dates[VANCOUVER] <= latest_acceptable_date:
+        bot.send_mes(f"{VANCOUVER} - {earliest_dates[VANCOUVER]}\nhttps://ais.usvisa-info.com/en-ca/niv/users/sign_in")
+    
+def scan_appointments(retryCount: int = DATE_REQUEST_MAX_RETRY, sleepTimeSec = 60):
+    driver = get_chrome_driver()
+    session_failures = 0
+    while session_failures < NEW_SESSION_AFTER_FAILURES:
+        try:
+            login(driver)
+            get_appointment_page(driver)
+            break
+        except Exception as e:
+            print("Unable to get appointment page: ", e)
+            session_failures += 1
+            sleep(FAIL_RETRY_DELAY)
+            continue
+
+    while True:
+        earliest_dates = get_available_date(driver, retryCount)
+        if not earliest_dates[TORONTO] and not earliest_dates[VANCOUVER]:
+            driver.quit()
+            print("None earliest dates, logging in again.")
+            return
+        
+        send_notifs(earliest_dates)
+        sleep(random.uniform(sleepTimeSec - 5, sleepTimeSec + 5))
+
+
+def get_available_date(driver, retryCount: int = DATE_REQUEST_MAX_RETRY):
+    date_request_tracker = RequestTracker(
+        retryCount if (retryCount > 0) else DATE_REQUEST_MAX_RETRY,
+        30 * retryCount if (retryCount > 0) else DATE_REQUEST_MAX_TIME
+    )
+
+    while date_request_tracker.should_retry():
+        dates_toronto = get_available_dates(driver, date_request_tracker, AVAILABLE_DATE_REQUEST_SUFFIX_TORONTO)
+        sleep(random.uniform(5, 10))
+        dates_vancouver = get_available_dates(driver, date_request_tracker, AVAILABLE_DATE_REQUEST_SUFFIX_VANCOUVER)
+        if not dates_toronto and not dates_vancouver:
+            print("Error occured when requesting available dates")
+            sleep(DATE_REQUEST_DELAY)
+            continue
+        earliest_available_dates = {
+            TORONTO : dates_toronto[0] if dates_toronto else None,
+            VANCOUVER : dates_vancouver[0] if dates_vancouver else None,
+        }
+        print(f"Successfully requested available dates: {earliest_available_dates}")
+        return earliest_available_dates
 
 
 if __name__ == "__main__":
@@ -160,7 +222,6 @@ if __name__ == "__main__":
     while True:
         session_count += 1
         print(f"Attempting with new session #{session_count}")
-        rescheduled = reschedule_with_new_session()
+        scan_appointments()
         sleep(NEW_SESSION_DELAY)
-        if rescheduled:
-            break
+
