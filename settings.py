@@ -15,7 +15,7 @@ NUM_PARTICIPANTS = 1
 # Say you want an appointment no later than Mar 14, 2024
 # Please strictly follow the YYYY-MM-DD format
 EARLIEST_ACCEPTABLE_DATE = "2024-03-26"
-LATEST_ACCEPTABLE_DATE = "2027-01-30" #"2025-12-31"
+LATEST_ACCEPTABLE_DATE = "2025-12-31"
 
 # Your consulate's city
 CONSULATES = {

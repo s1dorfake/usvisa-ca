@@ -4,7 +4,6 @@ from settings import TG_USERS, BOT_TOKEN, API_HASH
 
 class TelegramAlertBot:
     def __init__(self, name = ""):
-        print(API_HASH)
         self.api_id = 8
         self.api_hash = API_HASH
         self.bot_token = BOT_TOKEN
