@@ -3,7 +3,6 @@ import traceback
 import random
 from datetime import datetime
 from time import sleep
-import tempfile
 
 import requests
 from selenium import webdriver
@@ -21,14 +20,14 @@ bot = TelegramAlertBot()
 
 def get_chrome_driver() -> WebDriver:
     options = webdriver.ChromeOptions()
-    temp_user_data_dir = tempfile.mkdtemp()
-    if not SHOW_GUI:
-        options.add_argument("headless")
-        options.add_argument("window-size=1920x1080")
-        options.add_argument("disable-gpu")
-        options.add_argument('user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36')
+    #if not SHOW_GUI:
+    #options.add_argument("headless")
+    options.add_argument("window-size=1920x1080")
+    options.add_argument("disable-gpu")
+    options.add_argument('user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36')
     options.add_experimental_option("detach", DETACH)
     options.add_argument('--incognito')
+    options.add_argument("--headless")
     driver = webdriver.Chrome(options=options)
     return driver
 
