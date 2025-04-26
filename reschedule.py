@@ -22,7 +22,6 @@ bot = TelegramAlertBot()
 def get_chrome_driver() -> WebDriver:
     options = webdriver.ChromeOptions()
     temp_user_data_dir = tempfile.mkdtemp()
-    options.add_argument(f"user-data-dir={temp_user_data_dir}")
     if not SHOW_GUI:
         options.add_argument("headless")
         options.add_argument("window-size=1920x1080")

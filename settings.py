@@ -45,7 +45,7 @@ RECEIVER_EMAIL = ""
 # from local import *
 
 # See the automation in action
-SHOW_GUI = True  # toggle to false if you don't want to see the browser
+SHOW_GUI = False  # toggle to false if you don't want to see the browser
 
 # If you just want to see the program run WITHOUT clicking the confirm reschedule button
 # For testing, also set a date really far away so the app actually tries to reschedule
