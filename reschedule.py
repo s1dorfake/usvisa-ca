@@ -222,6 +222,8 @@ def get_available_date(driver, retryCount: int = DATE_REQUEST_MAX_RETRY):
         }
         print(f"Successfully requested available dates: {earliest_available_dates}")
         return earliest_available_dates
+    
+    return {TORONTO : None, VANCOUVER : None}
 
 
 if __name__ == "__main__":
