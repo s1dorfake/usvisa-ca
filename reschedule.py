@@ -2,7 +2,7 @@ import re
 import traceback
 import random
 from datetime import datetime
-from time import sleep
+from time import sleep, time
 
 import requests
 from selenium import webdriver
@@ -19,6 +19,8 @@ from bot import TelegramAlertBot
 import tempfile
 
 bot = TelegramAlertBot()
+LATEST_FETCH = time()
+FAIL_NOTIF_PERIOD = 60 * 10
 
 def get_chrome_driver() -> WebDriver:
     options = webdriver.ChromeOptions()
@@ -182,7 +184,9 @@ def scan_appointments(retryCount: int = DATE_REQUEST_MAX_RETRY, sleepTimeSec = 6
     session_failures = 0
     while session_failures < NEW_SESSION_AFTER_FAILURES:
         try:
+            print("Logging in")
             login(driver)
+            print("Getting appointments page:")
             get_appointment_page(driver)
             break
         except Exception as e:
@@ -190,13 +194,24 @@ def scan_appointments(retryCount: int = DATE_REQUEST_MAX_RETRY, sleepTimeSec = 6
             session_failures += 1
             sleep(FAIL_RETRY_DELAY)
             continue
+    
+    if session_failures == NEW_SESSION_AFTER_FAILURES:
+        print("Session failures limit, logging in again.")
+        driver.quit()
+        return
 
     while True:
+        current_fetch = time()
+        if current_fetch - LATEST_FETCH > FAIL_NOTIF_PERIOD:
+            bot.send_mes("No successful requests for 10 mins.")
+
         earliest_dates = get_available_date(driver, retryCount)
         if not earliest_dates[TORONTO] and not earliest_dates[VANCOUVER]:
-            driver.quit()
             print("None earliest dates, logging in again.")
+            driver.quit()
             return
+        
+        LATEST_FETCH = current_fetch
         
         send_notifs(earliest_dates)
         sleep(random.uniform(sleepTimeSec - 5, sleepTimeSec + 5))
@@ -209,8 +224,10 @@ def get_available_date(driver, retryCount: int = DATE_REQUEST_MAX_RETRY):
     )
 
     while date_request_tracker.should_retry():
+        print('Getting Toronto dates')
         dates_toronto = get_available_dates(driver, date_request_tracker, AVAILABLE_DATE_REQUEST_SUFFIX_TORONTO)
         sleep(random.uniform(5, 10))
+        print('Getting Vancouver dates')
         dates_vancouver = get_available_dates(driver, date_request_tracker, AVAILABLE_DATE_REQUEST_SUFFIX_VANCOUVER)
         if not dates_toronto and not dates_vancouver:
             print("Error occured when requesting available dates")
