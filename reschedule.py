@@ -204,6 +204,7 @@ def scan_appointments(retryCount: int = DATE_REQUEST_MAX_RETRY, sleepTimeSec = 6
         current_fetch = time()
         if current_fetch - LATEST_FETCH > FAIL_NOTIF_PERIOD:
             bot.send_mes("No successful requests for 10 mins.")
+            LATEST_FETCH = current_fetch
 
         earliest_dates = get_available_date(driver, retryCount)
         if not earliest_dates[TORONTO] and not earliest_dates[VANCOUVER]:
