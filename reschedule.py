@@ -200,6 +200,9 @@ def scan_appointments(retryCount: int = DATE_REQUEST_MAX_RETRY, sleepTimeSec = 6
         driver.quit()
         return
 
+    global LATEST_FETCH
+    global FAIL_NOTIF_PERIOD
+    
     while True:
         current_fetch = time()
         if current_fetch - LATEST_FETCH > FAIL_NOTIF_PERIOD:
