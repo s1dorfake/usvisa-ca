@@ -249,9 +249,10 @@ def get_available_date(driver, retryCount: int = DATE_REQUEST_MAX_RETRY):
 
 if __name__ == "__main__":
     session_count = 0
-    while True:
-        session_count += 1
-        print(f"Attempting with new session #{session_count}")
-        scan_appointments()
-        sleep(NEW_SESSION_DELAY)
+    scan_appointments()
+    #while True:
+    #    session_count += 1
+    #    print(f"Attempting with new session #{session_count}")
+    #    scan_appointments()
+    #    sleep(NEW_SESSION_DELAY)
 
