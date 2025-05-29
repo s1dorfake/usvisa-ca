@@ -29,7 +29,7 @@ FAIL_NOTIF_PERIOD = 60 * 10
 
 def get_chrome_version():
     try:
-        result = subprocess.run(['google-chrome', '--version'], 
+        result = subprocess.run(['/usr/bin/google-chrome', '--version'], 
                               capture_output=True, 
                               text=True, 
                               check=True)
