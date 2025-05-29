@@ -59,7 +59,7 @@ def get_chrome_driver() -> WebDriver:
     try:
         #version = get_chrome_version()
         #print(f"Chrome version: {version}")
-        path = ChromeDriverManager(driver_version="136.0.7103.116").install()
+        path = ChromeDriverManager().install()
         print(f"Driver path: {path}")
         service = Service(path)
         driver = webdriver.Chrome(service=service, options=options)
