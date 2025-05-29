@@ -39,16 +39,8 @@ def get_chrome_driver() -> WebDriver:
     options.add_argument("--no-sandbox")  # Required for Linux compatibility
     options.add_argument("--disable-dev-shm-usage")  # Avoid shared memory issues on Linux
 
-    try:
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=options)
-        return driver
-    except Exception as e:
-        print(f"Error initializing ChromeDriver: {e}")
-        raise
-
-    #driver = webdriver.Chrome(options=options)
-    #return driver
+    driver = webdriver.Chrome(options=options)
+    return driver
 
 
 def login(driver: WebDriver) -> None:
