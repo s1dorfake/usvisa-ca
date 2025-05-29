@@ -1,5 +1,5 @@
 requests
-selenium==4.31.0
-webdriver_manager==4.0.2
+selenium
+webdriver_manager
 telethon
 python-dotenv
