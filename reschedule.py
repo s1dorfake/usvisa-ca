@@ -29,7 +29,7 @@ FAIL_NOTIF_PERIOD = 60 * 10
 
 def chromedriver_deps():
     try:
-        result = subprocess.run(['ldd /root/.wdm/drivers/chromedriver/linux64/114.0.5735.90/chromedriver-linux64/chromedriver', '--version'], 
+        result = subprocess.run(['ldd /root/.wdm/drivers/chromedriver/linux64/114.0.5735.90/chromedriver', '--version'], 
                               capture_output=True, 
                               text=True, 
                               check=True)
@@ -38,8 +38,8 @@ def chromedriver_deps():
     except subprocess.CalledProcessError as e:
         print(f"Error running chromedriver: {e}")
         return None
-    except FileNotFoundError:
-        print("chromedriver not found in PATH")
+    except FileNotFoundError as e:
+        print(f"not found in PATH: {e}")
         return None
 
 def get_chrome_driver() -> WebDriver:
