@@ -40,7 +40,7 @@ def get_chrome_driver() -> WebDriver:
     options.add_argument("--disable-dev-shm-usage")  # Avoid shared memory issues on Linux
 
     try:
-        service = Service('/usr/local/bin/chromedriver')
+        service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
         return driver
     except Exception as e:
