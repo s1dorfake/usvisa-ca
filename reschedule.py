@@ -16,6 +16,9 @@ from request_tracker import RequestTracker
 from settings import *
 from bot import TelegramAlertBot
 
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+
 import tempfile
 
 bot = TelegramAlertBot()
@@ -36,8 +39,16 @@ def get_chrome_driver() -> WebDriver:
     options.add_argument("--no-sandbox")  # Required for Linux compatibility
     options.add_argument("--disable-dev-shm-usage")  # Avoid shared memory issues on Linux
 
-    driver = webdriver.Chrome(options=options)
-    return driver
+    try:
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=options)
+        return driver
+    except Exception as e:
+        print(f"Error initializing ChromeDriver: {e}")
+        raise
+
+    #driver = webdriver.Chrome(options=options)
+    #return driver
 
 
 def login(driver: WebDriver) -> None:
