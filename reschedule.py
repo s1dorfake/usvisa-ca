@@ -4,6 +4,8 @@ import random
 from datetime import datetime
 from time import sleep, time
 
+import subprocess
+
 import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -25,6 +27,21 @@ bot = TelegramAlertBot()
 LATEST_FETCH = time()
 FAIL_NOTIF_PERIOD = 60 * 10
 
+def get_chrome_version():
+    try:
+        result = subprocess.run(['google-chrome', '--version'], 
+                              capture_output=True, 
+                              text=True, 
+                              check=True)
+        version = result.stdout.strip()
+        return version
+    except subprocess.CalledProcessError as e:
+        print(f"Error running google-chrome --version: {e}")
+        return None
+    except FileNotFoundError:
+        print("google-chrome not found in PATH")
+        return None
+
 def get_chrome_driver() -> WebDriver:
     options = webdriver.ChromeOptions()
     options.add_experimental_option("detach", DETACH)
@@ -40,6 +57,8 @@ def get_chrome_driver() -> WebDriver:
     options.add_argument("--disable-dev-shm-usage")  # Avoid shared memory issues on Linux
 
     try:
+        version = get_chrome_version()
+        print(f"Chrome version: {version}")
         path = ChromeDriverManager().install()
         print(f"Driver path: {path}")
         service = Service(path)
