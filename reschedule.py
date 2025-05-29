@@ -27,19 +27,19 @@ bot = TelegramAlertBot()
 LATEST_FETCH = time()
 FAIL_NOTIF_PERIOD = 60 * 10
 
-def get_chrome_version():
+def chromedriver_deps():
     try:
-        result = subprocess.run(['/usr/bin/google-chrome', '--version'], 
+        result = subprocess.run(['ldd /root/.wdm/drivers/chromedriver/linux64/114.0.5735.90/chromedriver-linux64/chromedriver', '--version'], 
                               capture_output=True, 
                               text=True, 
                               check=True)
-        version = result.stdout.strip()
-        return version
+        output = result.stdout.strip()
+        return output
     except subprocess.CalledProcessError as e:
-        print(f"Error running google-chrome --version: {e}")
+        print(f"Error running chromedriver: {e}")
         return None
     except FileNotFoundError:
-        print("google-chrome not found in PATH")
+        print("chromedriver not found in PATH")
         return None
 
 def get_chrome_driver() -> WebDriver:
@@ -62,6 +62,7 @@ def get_chrome_driver() -> WebDriver:
         path = ChromeDriverManager().install()
         print(f"Driver path: {path}")
         service = Service(path)
+        print(chromedriver_deps())
         driver = webdriver.Chrome(service=service, options=options)
         return driver
     except Exception as e:
