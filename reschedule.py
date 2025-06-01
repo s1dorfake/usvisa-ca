@@ -56,6 +56,8 @@ def get_chrome_driver() -> WebDriver:
     options.add_argument("--no-sandbox")  # Required for Linux compatibility
     options.add_argument("--disable-dev-shm-usage")  # Avoid shared memory issues on Linux
 
+    print("Using Chrome binary at:", options.binary_location)
+
     """
     try:
         #version = get_chrome_version()
