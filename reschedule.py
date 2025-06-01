@@ -233,7 +233,7 @@ def scan_appointments(retryCount: int = DATE_REQUEST_MAX_RETRY, sleepTimeSec = 6
             continue
     
     if session_failures == NEW_SESSION_AFTER_FAILURES:
-        print("Session failures limit, logging in again.")
+        print("Session failures limit, returning.")
         driver.quit()
         return
 
@@ -244,11 +244,12 @@ def scan_appointments(retryCount: int = DATE_REQUEST_MAX_RETRY, sleepTimeSec = 6
         current_fetch = time()
         if current_fetch - LATEST_FETCH > FAIL_NOTIF_PERIOD:
             bot.send_mes("No successful requests for 10 mins.")
+            print("No successful requests for 10 mins.")
             LATEST_FETCH = current_fetch
 
         earliest_dates = get_available_date(driver, retryCount)
         if not earliest_dates[TORONTO] and not earliest_dates[VANCOUVER]:
-            print("None earliest dates, logging in again.")
+            print("None earliest dates, returning.")
             driver.quit()
             return
         
@@ -285,8 +286,15 @@ def get_available_date(driver, retryCount: int = DATE_REQUEST_MAX_RETRY):
 
 
 if __name__ == "__main__":
-    session_count = 0
-    scan_appointments()
+    bot.send_mes("Bot started")
+    try:
+        session_count = 0
+        scan_appointments()
+    except Exception as e:
+        print(f"Exception occured {e}")
+        bot.send_mes(f"Exception occured {e}")
+    
+    bot.send_mes("Bot stopped. Will be restarted soon.")
     #while True:
     #    session_count += 1
     #    print(f"Attempting with new session #{session_count}")
