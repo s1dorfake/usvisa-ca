@@ -287,18 +287,22 @@ def get_available_date(driver, retryCount: int = DATE_REQUEST_MAX_RETRY):
 
 if __name__ == "__main__":
     #bot.send_mes("Bot started")
-    try:
-        session_count = 0
-        scan_appointments()
-    except Exception as e:
-        print(f"Exception occured {e}")
-        bot.send_mes(f"Exception occured {e}")
-    sleep(random.uniform(5, 10))
+    #try:
+    #    session_count = 0
+    #    scan_appointments()
+    #except Exception as e:
+    #    print(f"Exception occured {e}")
+    #    bot.send_mes(f"Exception occured {e}")
+    #sleep(random.uniform(5, 10))
     
     #bot.send_mes("Bot stopped. Will be restarted soon.")
-    #while True:
-    #    session_count += 1
-    #    print(f"Attempting with new session #{session_count}")
-    #    scan_appointments()
-    #    sleep(NEW_SESSION_DELAY)
+    while True:
+        try:
+            session_count += 1
+            print(f"Attempting with new session #{session_count}")
+            scan_appointments()
+            sleep(NEW_SESSION_DELAY)
+        except Exception as e:
+            print(f"Exception occured {e}")
+            bot.send_mes(f"Exception occured {e}")
 
