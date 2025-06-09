@@ -296,6 +296,7 @@ if __name__ == "__main__":
     #sleep(random.uniform(5, 10))
     
     #bot.send_mes("Bot stopped. Will be restarted soon.")
+    session_count = 0
     while True:
         try:
             session_count += 1
