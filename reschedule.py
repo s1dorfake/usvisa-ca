@@ -217,10 +217,19 @@ def send_notifs(earliest_dates):
         bot.send_mes(f"{VANCOUVER} - {earliest_dates[VANCOUVER]}\nhttps://ais.usvisa-info.com/en-ca/niv/users/sign_in")
     
 def scan_appointments(retryCount: int = DATE_REQUEST_MAX_RETRY, sleepTimeSec = 60):
+    global LATEST_FETCH
+    global FAIL_NOTIF_PERIOD
+
     driver = get_chrome_driver()
     session_failures = 0
     while session_failures < NEW_SESSION_AFTER_FAILURES:
         try:
+            current_fetch = time()
+            if current_fetch - LATEST_FETCH > FAIL_NOTIF_PERIOD:
+                bot.send_mes("No successful requests for 10 mins.")
+                print("No successful requests for 10 mins.")
+                LATEST_FETCH = current_fetch
+                
             print("Logging in")
             login(driver)
             print("Getting appointments page:")
@@ -237,8 +246,6 @@ def scan_appointments(retryCount: int = DATE_REQUEST_MAX_RETRY, sleepTimeSec = 6
         driver.quit()
         return
 
-    global LATEST_FETCH
-    global FAIL_NOTIF_PERIOD
     
     while True:
         current_fetch = time()
