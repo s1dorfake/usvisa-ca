@@ -224,18 +224,19 @@ def scan_appointments(retryCount: int = DATE_REQUEST_MAX_RETRY, sleepTimeSec = 6
     session_failures = 0
     while session_failures < NEW_SESSION_AFTER_FAILURES:
         try:
-            current_fetch = time()
-            if current_fetch - LATEST_FETCH > FAIL_NOTIF_PERIOD:
-                bot.send_mes("No successful requests for 10 mins.")
-                print("No successful requests for 10 mins.")
-                LATEST_FETCH = current_fetch
-                
             print("Logging in")
             login(driver)
             print("Getting appointments page:")
             get_appointment_page(driver)
             break
         except Exception as e:
+            current_fetch = time()
+            if current_fetch - LATEST_FETCH > FAIL_NOTIF_PERIOD:
+                bot.send_mes(f"Unable to get appointment page:\n{e}")
+                bot.send_mes("No successful requests for 10 mins.")
+                print("No successful requests for 10 mins.")
+                LATEST_FETCH = current_fetch
+
             print("Unable to get appointment page: ", e)
             session_failures += 1
             sleep(FAIL_RETRY_DELAY)
@@ -294,15 +295,16 @@ def get_available_date(driver, retryCount: int = DATE_REQUEST_MAX_RETRY):
 
 if __name__ == "__main__":
     #bot.send_mes("Bot started")
-    #try:
-    #    session_count = 0
-    #    scan_appointments()
-    #except Exception as e:
-    #    print(f"Exception occured {e}")
-    #    bot.send_mes(f"Exception occured {e}")
-    #sleep(random.uniform(5, 10))
+    try:
+        session_count = 0
+        scan_appointments()
+    except Exception as e:
+        print(f"Exception occured {e}")
+        bot.send_mes(f"Exception occured {e}")
+    sleep(random.uniform(5, 10))
     
     #bot.send_mes("Bot stopped. Will be restarted soon.")
+    """
     session_count = 0
     while True:
         try:
@@ -313,4 +315,4 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Exception occured {e}")
             bot.send_mes(f"Exception occured {e}")
-
+    """
