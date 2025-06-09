@@ -301,7 +301,7 @@ if __name__ == "__main__":
         try:
             session_count += 1
             print(f"Attempting with new session #{session_count}")
-            scan_appointments()
+            scan_appointments(sleepTimeSec=15)
             sleep(NEW_SESSION_DELAY)
         except Exception as e:
             print(f"Exception occured {e}")
