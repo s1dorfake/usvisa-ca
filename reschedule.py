@@ -149,61 +149,6 @@ def get_available_dates(
     return dates
 
 
-def reschedule(driver: WebDriver, retryCount: int = 0) -> bool:
-    date_request_tracker = RequestTracker(
-        retryCount if (retryCount > 0) else DATE_REQUEST_MAX_RETRY,
-        30 * retryCount if (retryCount > 0) else DATE_REQUEST_MAX_TIME
-    )
-    while date_request_tracker.should_retry():
-        dates = get_available_dates(driver, date_request_tracker)
-        if not dates:
-            print("Error occured when requesting available dates")
-            sleep(DATE_REQUEST_DELAY)
-            continue
-        earliest_available_date = dates[0]
-        latest_acceptable_date = datetime.strptime(
-            LATEST_ACCEPTABLE_DATE, "%Y-%m-%d"
-        ).date()
-        if earliest_available_date <= latest_acceptable_date:
-            print(
-                f"{datetime.now().strftime('%H:%M:%S')} FOUND SLOT ON {earliest_available_date}!!!"
-            )
-            try:
-                if legacy_reschedule(driver, earliest_available_date):
-                    print("SUCCESSFULLY RESCHEDULED!!!")
-                    return True
-                return False
-            except Exception as e:
-                print("Rescheduling failed: ", e)
-                traceback.print_exc()
-                continue
-        else:
-            print(
-                f"{datetime.now().strftime('%H:%M:%S')} Earliest available date is {earliest_available_date}"
-            )
-        sleep(DATE_REQUEST_DELAY)
-    return False
-
-
-def reschedule_with_new_session(retryCount: int = DATE_REQUEST_MAX_RETRY) -> bool:
-    driver = get_chrome_driver()
-    session_failures = 0
-    while session_failures < NEW_SESSION_AFTER_FAILURES:
-        try:
-            login(driver)
-            get_appointment_page(driver)
-            break
-        except Exception as e:
-            print("Unable to get appointment page: ", e)
-            session_failures += 1
-            sleep(FAIL_RETRY_DELAY)
-            continue
-    rescheduled = reschedule(driver, retryCount)
-    driver.quit()
-    if rescheduled:
-        return True
-    else:
-        return False
     
 def send_notifs(earliest_dates):
     latest_acceptable_date = datetime.strptime(
@@ -230,12 +175,8 @@ def scan_appointments(retryCount: int = DATE_REQUEST_MAX_RETRY, sleepTimeSec = 6
             get_appointment_page(driver)
             break
         except Exception as e:
-            current_fetch = time()
-            if current_fetch - LATEST_FETCH > FAIL_NOTIF_PERIOD:
-                bot.send_mes(f"Unable to get appointment page:\n{e}")
-                bot.send_mes("No successful requests for 10 mins.")
-                print("No successful requests for 10 mins.")
-                LATEST_FETCH = current_fetch
+            if "ERR_CONNECTION_REFUSED" in e:
+                bot.send_mes(f"ERR_CONNECTION_REFUSED, redeploy:\n{e}")
 
             print("Unable to get appointment page: ", e)
             session_failures += 1
