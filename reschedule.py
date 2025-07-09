@@ -31,6 +31,8 @@ LATEST_PD_ALERT = 0
 PD_ALERT_PERIOD = 60 * 10
 
 def send_pd_event(summary, source="Default", retries=5):
+    global LATEST_PD_ALERT
+    global PD_ALERT_PERIOD
     current = time()
     if LATEST_PD_ALERT + PD_ALERT_PERIOD > current:
         print('Latest pd alert sent recently, skipping')
@@ -191,12 +193,12 @@ def send_notifs(earliest_dates):
     if earliest_dates[TORONTO] and earliest_dates[TORONTO] <= latest_acceptable_date:
         mes = f"{TORONTO} - {earliest_dates[TORONTO]}\nhttps://ais.usvisa-info.com/en-ca/niv/users/sign_in"
         bot.send_mes(mes)
-        send_pd_event(mes)
+        #send_pd_event(mes)
 
     if earliest_dates[VANCOUVER] and earliest_dates[VANCOUVER] <= latest_acceptable_date:
         mes = f"{VANCOUVER} - {earliest_dates[VANCOUVER]}\nhttps://ais.usvisa-info.com/en-ca/niv/users/sign_in"
         bot.send_mes(mes)
-        send_pd_event(mes)
+        #send_pd_event(mes)
     
 def scan_appointments(retryCount: int = DATE_REQUEST_MAX_RETRY, sleepTimeSec = 60):
     global LATEST_FETCH
