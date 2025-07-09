@@ -27,6 +27,39 @@ bot = TelegramAlertBot()
 LATEST_FETCH = time()
 FAIL_NOTIF_PERIOD = 60 * 10
 
+LATEST_PD_ALERT = 0
+PD_ALERT_PERIOD = 60 * 10
+
+def send_pd_event(summary, source="Default", retries=5):
+    current = time()
+    if LATEST_PD_ALERT + PD_ALERT_PERIOD > current:
+        print('Latest pd alert sent recently, skipping')
+        return True
+    LATEST_PD_ALERT = current
+    url = "https://events.pagerduty.com/v2/enqueue"
+    headers = {
+        "Content-Type": "application/json"
+    }
+    data = {
+        "payload": {
+            "summary": summary,
+            "severity": "critical",
+            "source": source
+        },
+        "routing_key": "ee7f383c462c4d0cd0fc3c1d5b1594f1",
+        "event_action": "trigger"
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+
+    print(response.status_code)
+    print(response.text)
+
+    if response.status_code != 202 and retries > 0:
+        return send_pd_event(summary, source, retries-1)
+    
+    return response.status_code == 202
+
 def chromedriver_deps():
     try:
         result = subprocess.run(['ldd /root/.wdm/drivers/chromedriver/linux64/114.0.5735.90/chromedriver', '--version'], 
@@ -156,10 +189,14 @@ def send_notifs(earliest_dates):
     ).date()
 
     if earliest_dates[TORONTO] and earliest_dates[TORONTO] <= latest_acceptable_date:
-        bot.send_mes(f"{TORONTO} - {earliest_dates[TORONTO]}\nhttps://ais.usvisa-info.com/en-ca/niv/users/sign_in")
+        mes = f"{TORONTO} - {earliest_dates[TORONTO]}\nhttps://ais.usvisa-info.com/en-ca/niv/users/sign_in"
+        bot.send_mes(mes)
+        send_pd_event(mes)
 
     if earliest_dates[VANCOUVER] and earliest_dates[VANCOUVER] <= latest_acceptable_date:
-        bot.send_mes(f"{VANCOUVER} - {earliest_dates[VANCOUVER]}\nhttps://ais.usvisa-info.com/en-ca/niv/users/sign_in")
+        mes = f"{VANCOUVER} - {earliest_dates[VANCOUVER]}\nhttps://ais.usvisa-info.com/en-ca/niv/users/sign_in"
+        bot.send_mes(mes)
+        send_pd_event(mes)
     
 def scan_appointments(retryCount: int = DATE_REQUEST_MAX_RETRY, sleepTimeSec = 60):
     global LATEST_FETCH
