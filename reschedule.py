@@ -193,7 +193,7 @@ def send_notifs(earliest_dates):
     if earliest_dates[TORONTO] and earliest_dates[TORONTO] <= latest_acceptable_date:
         mes = f"{TORONTO} - {earliest_dates[TORONTO]}\nhttps://ais.usvisa-info.com/en-ca/niv/users/sign_in"
         bot.send_mes(mes)
-        #send_pd_event(mes)
+        #send_pd_event(mes) 
 
     if earliest_dates[VANCOUVER] and earliest_dates[VANCOUVER] <= latest_acceptable_date:
         mes = f"{VANCOUVER} - {earliest_dates[VANCOUVER]}\nhttps://ais.usvisa-info.com/en-ca/niv/users/sign_in"
