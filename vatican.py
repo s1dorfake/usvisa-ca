@@ -17,7 +17,7 @@ def check():
                 print(f"Visit '{visit['name']}' is sold out")
             else:
                 bot.send_mes(f"Visit '{visit['name']}' is '{visit['availability']}'")
-                print(f"Visit '{visit['name']}' is '{visit['availability']}'")
+                print(f"Visit '{visit['name']}' is '{visit['availability']}'\nhttps://tickets.museivaticani.va/home/visit/4/1755468000000/1/1")
 
 
 while True:
