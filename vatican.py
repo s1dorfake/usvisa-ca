@@ -22,5 +22,5 @@ def check():
 
 while True:
     check()
-    time.sleep(20)
+    time.sleep(2)
 
