@@ -11,10 +11,10 @@ def check():
     for visit in r["visits"]:
         if visit["id"] == 640:
             if visit["availability"] == "SOLD_OUT":
-                bot.send_message(f"Visit '{visit['name']}' is sold out")
+                bot.send_mes(f"Visit '{visit['name']}' is sold out")
                 print(f"Visit '{visit['name']}' is sold out")
             else:
-                bot.send_message(f"Visit '{visit['name']}' is '{visit['availability']}'")
+                bot.send_mes(f"Visit '{visit['name']}' is '{visit['availability']}'")
                 print(f"Visit '{visit['name']}' is '{visit['availability']}'")
 
 
