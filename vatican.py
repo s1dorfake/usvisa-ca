@@ -20,8 +20,8 @@ def check():
                 #bot.send_mes(f"Visit '{visit['name']}' is sold out")
                 print(f"Visit '{visit['name']}' is sold out")
             else:
-                #bot.send_mes(f"Visit '{visit['name']}' is '{visit['availability']}'")
-                print(f"Visit '{visit['name']}' is '{visit['availability']}'\nhttps://tickets.museivaticani.va/home/visit/4/1755468000000/1/1")
+                bot.send_mes(f"Visit '{visit['name']}' is '{visit['availability']}'\nhttps://tickets.museivaticani.va/home/visit/4/1755468000000/1/1")
+                print(f"Visit '{visit['name']}' is '{visit['availability']}'")
 
 def get_times():
     r = requests.get(TIMES_URL).json()
@@ -43,7 +43,7 @@ while True:
         LAST_TIMES = new_times
         if len(new_times) > 0:
             print(f"New times available: {', '.join(new_times)}")
-            bot.send_mes(f"New times available: {', '.join(new_times)}")
+            bot.send_mes(f"New times available: {', '.join(new_times)}\nhttps://tickets.museivaticani.va/home/visit/4/1755468000000/1/1")
         else:
             print("All times sold out")
     time.sleep(2)
